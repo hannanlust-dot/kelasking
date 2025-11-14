@@ -13,6 +13,16 @@ export default async function handler(req, res) {
     const BOT_TOKEN = process.env.TELEGRAM_TOKEN;
     const CHAT_ID = chatId || process.env.CHAT_ID;
 
+    if (!BOT_TOKEN) {
+      return res.status(500).json({ error: "Missing TELEGRAM_TOKEN env" });
+    }
+
+    if (!CHAT_ID) {
+      return res.status(400).json({ error: "Missing chatId" });
+    }
+
+    console.log("📌 Sending message to chatId:", CHAT_ID);
+
     const sendUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
     const response = await fetch(sendUrl, {
@@ -26,6 +36,12 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+
+    // Cek error dari Telegram
+    if (!data.ok) {
+      console.warn("⚠️ Telegram API error:", data);
+    }
+
     return res.status(200).json({ ok: true, telegram: data });
 
   } catch (err) {
