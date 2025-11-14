@@ -1,11 +1,21 @@
-bot.on("message", (msg) => {
-  const text = msg.text;
+export default function handler(req, res) {
+  try {
+    global.lastCommand = global.lastCommand || null;
 
-  fetch("https://kelasking-alpha.vercel.app/api/server", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ cmd: text })
-  });
+    if (req.method === "POST") {
+      const body = req.body || {};
+      global.lastCommand = body;
+      return res.status(200).json({ message: "Command received" });
+    }
 
-  bot.sendMessage(msg.chat.id, "Command dikirim ke server!");
-});
+    if (req.method === "GET") {
+      const cmd = global.lastCommand;
+      global.lastCommand = null;
+      return res.status(200).json(cmd || {});
+    }
+
+    res.status(405).end();
+  } catch (e) {
+    res.status(500).json({ error: e.toString() });
+  }
+}
