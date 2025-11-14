@@ -1,16 +1,11 @@
-let lastCommand = null;
+bot.on("message", (msg) => {
+  const text = msg.text;
 
-export default function handler(req, res) {
-  if (req.method === "POST") {
-    lastCommand = req.body;  // Simpan command dari Telegram
-    return res.status(200).json({ message: "Command received" });
-  }
+  fetch("https://kelasking-alpha.vercel.app/api/server", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ cmd: text })
+  });
 
-  if (req.method === "GET") {
-    const cmd = lastCommand;
-    lastCommand = null; // reset biar ga spam
-    return res.status(200).json(cmd || {});
-  }
-
-  res.status(405).end();
-}
+  bot.sendMessage(msg.chat.id, "Command dikirim ke server!");
+});
