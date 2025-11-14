@@ -3,8 +3,8 @@ export default function handler(req, res) {
     global.lastCommand = global.lastCommand || null;
 
     if (req.method === "POST") {
-      const body = req.body || {};
-      global.lastCommand = body;
+      console.log("POST RECEIVED:", req.body); // <---- tambahan penting
+      global.lastCommand = req.body;
       return res.status(200).json({ message: "Command received" });
     }
 
